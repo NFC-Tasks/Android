@@ -65,6 +65,9 @@ public class TagWriteActivity extends AppCompatActivity{
         mNFCAdapter.enableForegroundDispatch(this, mNFCPendingIntent, mWriteTagFilters, null);
     }
 
+    /**
+     * Called when a new tag is detected.
+     */
     @Override
     protected void onNewIntent(Intent intent) {
         // If we are in tag writing mode and a tag is detected, write to it.
@@ -80,6 +83,9 @@ public class TagWriteActivity extends AppCompatActivity{
         }
     }
 
+    /**
+     * Writes a message to a tag and returns true if successful.
+     */
     private boolean writeTag(NdefMessage message, Tag tag) {
         int size = message.toByteArray().length;
         try {
