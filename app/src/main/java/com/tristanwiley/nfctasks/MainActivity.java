@@ -16,47 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-/*
-_______████████__██████
-_________█░░░░░░░░██_██░░░░░░█
-________█░░░░░░░░░░░█░░░░░░░░░█
-_______█░░░░░░░███░░░█░░░░░░░░░█
-_______█░░░░███░░░███░█░░░████░█
-______█░░░██░░░░░░░░███░██░░░░██
-_____█░░░░░░░░░░░░░░░░░█░░░░░░░░███
-____█░░░░░░░░░░░░░██████░░░░░████░░█
-____█░░░░░░░░░█████░░░████░░██░░██░░█
-___██░░░░░░░███░░░░░░░░░░█░░░░░░░░███
-__█░░░░░░░░░░░░░░█████████░░█████████
-█░░░░░░░░░░█████_████████_█████_█
-█░░░░░░░░░░█___█_████___███_█_█
-█░░░░░░░░░░░░█_████_████__██_██████
-░░░░░░░░░░░░░█████████░░░████████░░░█
-░░░░░░░░░░░░░░░░█░░░░░█░░░░░░░░░░░░█
-░░░░░░░░░░░░░░░░░░░░██░░░░█░░░░░░██
-░░░░░░░░░░░░░░░░░░██░░░░░░░███████
-░░░░░░░░░░░░░░░░██░░░░░░░░░░█░░░░░█
-░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█
-░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█
-░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█
-░░░░░░░░░░░█████████░░░░░░░░░░░░░░██
-░░░░░░░░░░█▒▒▒▒▒▒▒▒███████████████▒▒█
-░░░░░░░░░█▒▒███████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒█
-░░░░░░░░░█▒▒▒▒▒▒▒▒▒█████████████████
-░░░░░░░░░░████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒█
-░░░░░░░░░░░░░░░░░░██████████████████
-░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█
-██░░░░░░░░░░░░░░░░░░░░░░░░░░░██
-▓██░░░░░░░░░░░░░░░░░░░░░░░░██
-▓▓▓███░░░░░░░░░░░░░░░░░░░░█
-▓▓▓▓▓▓███░░░░░░░░░░░░░░░██
-▓▓▓▓▓▓▓▓▓███████████████▓▓█
-▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██
-▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█
- */
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -103,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    AlertDialog adActions;
     public void showActions() {
         final String names[] = {"Send Text", "Access Bluetooth", "Turn on Music", "Call Contact", "Read Weather"};
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
@@ -122,13 +86,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         lv.setAdapter(adapter);
-        alertDialog.show();
+        adActions = alertDialog.show();
     }
 
+    AlertDialog ad;
     public void musicDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
         LayoutInflater inflater = getLayoutInflater();
-        View convertView = inflater.inflate(R.layout.play_song, null);
+        final View convertView = inflater.inflate(R.layout.play_song, null);
         alertDialog.setView(convertView);
         convertView.findViewById(R.id.openSong).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,7 +104,19 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent_upload, 1);
             }
         });
-        alertDialog.show();
+
+        convertView.findViewById(R.id.addSongAction).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText et = (EditText) convertView.findViewById(R.id.songPath);
+                if(!et.getText().toString().equals("")){
+                    //TODO add to database and stuff
+                }else{
+                    Toast.makeText(getApplicationContext(), "Enter a path", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        ad = alertDialog.show();
     }
 
     @Override
@@ -148,13 +125,24 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1) {
 
             if (resultCode == RESULT_OK) {
+                LayoutInflater inflater = getLayoutInflater();
+                final View convertView = inflater.inflate(R.layout.play_song, null);
+                EditText et = (EditText) convertView.findViewById(R.id.songPath);
 
                 //the selected audio
                 Uri uri = data.getData();
 
-                Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-                viewIntent.setDataAndType(uri, "audio/*");
-                startActivity(Intent.createChooser(viewIntent, null));
+                //TODO add to database and list and stuff
+                ad.dismiss();
+                adActions.dismiss();
+
+//                Log.wtf("PATH", uri.getPath());
+//                String path = uri.getEncodedPath();
+//
+//                et.setText(path);
+//                Intent viewIntent = new Intent(Intent.ACTION_VIEW);
+//                viewIntent.setDataAndType(uri, "audio/*");
+//                startActivity(Intent.createChooser(viewIntent, null));
 
             }else{
                 Log.wtf("OnActivityResult", "Request Code not okay :(");
