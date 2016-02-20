@@ -1,5 +1,6 @@
 package com.tristanwiley.nfctasks;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.nestlabs.sdk.GlobalUpdate;
 import com.nestlabs.sdk.NestAPI;
@@ -53,7 +55,10 @@ public class NestActivity extends AppCompatActivity {
         findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.v(TAG, mThermostat.toString());
+                if(mThermostat != null) {
+                    Log.v(TAG, mThermostat.toString());
+                    ((TextView)findViewById(R.id.textView)).setText(mThermostat.toString());
+                }
             }
         });
     }
@@ -62,6 +67,22 @@ public class NestActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(ARG_THERMOSTAT, mThermostat);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (resultCode != RESULT_OK || requestCode != AUTH_TOKEN_REQUEST_CODE) {
+            Log.e(TAG, "Finished with no result.");
+            return;
+        }
+
+        mToken = NestAPI.getAccessTokenFromIntent(intent);
+        if (mToken != null) {
+            Settings.saveAuthToken(this, mToken);
+            authenticate(mToken);
+        } else {
+            Log.e(TAG, "Unable to resolve access token from payload.");
+        }
     }
 
     /**
@@ -89,7 +110,6 @@ public class NestActivity extends AppCompatActivity {
             public void onAuthSuccess() {
                 Log.v(TAG, "Authentication succeeded.");
                 fetchThermostat();
-                Log.v(TAG, mThermostat.toString());
             }
 
             @Override
