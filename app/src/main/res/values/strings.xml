@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">NFC Tasks</string>
     <string name="action_settings">Settings</string>
+    <string name="action_tag_write">Tag Write</string>
 </resources>

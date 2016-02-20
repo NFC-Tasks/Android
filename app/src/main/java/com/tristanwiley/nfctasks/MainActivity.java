@@ -1,5 +1,6 @@
 package com.tristanwiley.nfctasks;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -45,8 +46,16 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if(id == R.id.action_tag_write) {
+            startTagWriteActivity();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startTagWriteActivity() {
+        Intent tagWrite = new Intent(this, TagWriteActivity.class);
+        startActivity(tagWrite);
     }
 }
