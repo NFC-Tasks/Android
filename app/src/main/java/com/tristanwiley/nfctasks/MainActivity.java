@@ -92,6 +92,12 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if(id == R.id.action_tag_write) {
+            startTagWriteActivity();
+            return true;
+        } else if(id == R.id.action_nest) {
+            startNestActivity();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -168,5 +174,15 @@ public class MainActivity extends AppCompatActivity {
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
+    }
+
+    private void startNestActivity() {
+        Intent nest = new Intent(this, NestActivity.class);
+        startActivity(nest);
+    }
+
+    private void startTagWriteActivity() {
+        Intent tagWrite = new Intent(this, TagWriteActivity.class);
+        startActivity(tagWrite);
     }
 }
