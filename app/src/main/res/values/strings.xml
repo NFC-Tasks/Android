@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">NFC Tasks</string>
+    <string name="action_settings">Settings</string>
+</resources>
