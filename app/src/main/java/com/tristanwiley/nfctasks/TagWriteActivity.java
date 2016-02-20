@@ -74,7 +74,7 @@ public class TagWriteActivity extends AppCompatActivity{
         if(mWriteMode && NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             NdefRecord record = NdefRecord.createMime(mMimeType, getFlagString().getBytes());
-            NdefMessage message = new NdefMessage(new NdefRecord[] { record });
+            NdefMessage message = new NdefMessage(record);
 
             if(writeTag(message, detectedTag)) {
                 //TODO: Success!
