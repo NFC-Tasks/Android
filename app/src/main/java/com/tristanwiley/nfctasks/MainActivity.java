@@ -20,6 +20,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -28,6 +33,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Firebase.setAndroidContext(getApplicationContext());
+        Firebase ref = new Firebase("https://nfc-tasks.firebaseio.com/");
+
+        List<Operation> tasks = new ArrayList<>();
+        List<String> t = new ArrayList<>();
+        t.add("TEMP_TO,65");
+        t.add("DEVICE_NAME,Joe");
+        tasks.add(new Operation("TYPE_NEST", t));
+        Tag tag = new Tag("Adam's Dumb Tag", tasks);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

@@ -2,6 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.tristanwiley.nfctasks.MainActivity">
+
+    <item
+        android:id="@+id/action_add_tag"
+        android:title="@string/action_add_tag"
+        app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/action_nest"
         android:orderInCategory="98"

@@ -4,4 +4,5 @@
     <string name="action_tag_write">Tag Write</string>
     <string name="title_activity_nest">Nest</string>
     <string name="action_nest">Nest</string>
+    <string name="action_add_tag">Add Tag</string>
 </resources>
