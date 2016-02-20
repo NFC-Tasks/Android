@@ -1,13 +1,20 @@
 package com.tristanwiley.nfctasks;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,8 +29,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                showActions();
             }
         });
     }
@@ -48,5 +54,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void showActions(){
+        final String names[] ={"Send Text", "Access Bluetooth", "Turn on Music", "Call Contact", "Read Weather"};
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        View convertView = inflater.inflate(R.layout.custom, null);
+        alertDialog.setView(convertView);
+//        alertDialog.setTitle("");
+        ListView lv = (ListView) convertView.findViewById(R.id.choicesList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,names);
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getApplicationContext(), names[position], Toast.LENGTH_SHORT).show();
+            }
+        });
+        lv.setAdapter(adapter);
+        alertDialog.show();
     }
 }
