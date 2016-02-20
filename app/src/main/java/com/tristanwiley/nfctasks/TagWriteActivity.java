@@ -10,7 +10,10 @@ import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.nfc.tech.NfcA;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -26,6 +29,20 @@ public class TagWriteActivity extends AppCompatActivity{
     private PendingIntent mNFCPendingIntent;
 
     private String mMimeType = "application/tristanwiley.nfctasks";
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_tag_write);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Start listening
+        mNFCAdapter = NfcAdapter.getDefaultAdapter(this);
+        mNFCPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, TagWriteActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        enableTagWriteMode();
+    }
 
     /**
      * Begins tag write mode and waits for an NFC tag to be detected.
@@ -47,6 +64,7 @@ public class TagWriteActivity extends AppCompatActivity{
 
             if(writeTag(message, detectedTag)) {
                 //TODO: Success!
+                Toast.makeText(this, "SUCCESS!", Toast.LENGTH_SHORT).show();
             }
         }
     }
