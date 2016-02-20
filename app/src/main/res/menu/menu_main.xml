@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.tristanwiley.nfctasks.MainActivity">
     <item
+        android:id="@+id/action_nest"
+        android:orderInCategory="98"
+        android:title="@string/action_nest"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_tag_write"
         android:orderInCategory="99"
         android:title="@string/action_tag_write"

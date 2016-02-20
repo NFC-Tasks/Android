@@ -25,17 +25,25 @@
             android:name=".TagWriteActivity"
             android:label="@string/action_tag_write"
             android:theme="@style/AppTheme.NoActionBar">
+
             <!-- Handle notes detected from outside our application -->
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".NestActivity"
+            android:label="@string/title_activity_nest"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
