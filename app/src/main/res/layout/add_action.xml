@@ -4,25 +4,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
+<!--I'm a pretty unicorn-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
+        android:lines="1"
+        android:maxLines="1"
+        android:minLines="1"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Add Command"/>
-
+<!--Oh so pretty-->
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="#0E0E0E"/>
-
+<!--Yayyyy-->
     <ListView
         android:id="@+id/choicesList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="#0E0E0E"
         android:dividerHeight="1px">
-
+<!--Wowwww-->
     </ListView>
 </LinearLayout>
