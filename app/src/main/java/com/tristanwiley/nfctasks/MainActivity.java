@@ -20,10 +20,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.firebase.client.Firebase;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.tristanwiley.nfctasks.Utils.Twilio;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,15 +34,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Firebase.setAndroidContext(getApplicationContext());
-        Firebase ref = new Firebase("https://nfc-tasks.firebaseio.com/");
-
-        List<Operation> tasks = new ArrayList<>();
-        List<String> t = new ArrayList<>();
-        t.add("TEMP_TO,65");
-        t.add("DEVICE_NAME,Joe");
-        tasks.add(new Operation("TYPE_NEST", t));
-        Tag tag = new Tag("Adam's Dumb Tag", tasks);
+//        new Twilio().sendMessage(getApplicationContext(), "5867442919", "Good shit fam");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -59,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
