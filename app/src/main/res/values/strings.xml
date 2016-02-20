@@ -5,4 +5,5 @@
     <string name="title_activity_nest">Nest</string>
     <string name="action_nest">Nest</string>
     <string name="action_add_tag">Add Tag</string>
+    <string name="not_available">N/A</string>
 </resources>
