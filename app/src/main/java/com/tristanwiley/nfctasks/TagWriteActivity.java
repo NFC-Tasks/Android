@@ -41,7 +41,18 @@ public class TagWriteActivity extends AppCompatActivity{
         // Start listening
         mNFCAdapter = NfcAdapter.getDefaultAdapter(this);
         mNFCPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, TagWriteActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         enableTagWriteMode();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mNFCAdapter.disableForegroundDispatch(this);
     }
 
     /**
