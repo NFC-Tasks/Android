@@ -1,6 +1,7 @@
 package com.tristanwiley.nfctasks;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import com.nestlabs.sdk.GlobalUpdate;
 import com.nestlabs.sdk.NestAPI;
 import com.nestlabs.sdk.NestException;
 import com.nestlabs.sdk.NestListener;
@@ -17,6 +19,7 @@ import com.nestlabs.sdk.Thermostat;
 
 public class NestActivity extends AppCompatActivity {
     private static final String TAG = NestActivity.class.getSimpleName();
+    private static final String ARG_THERMOSTAT = "thermostatArg";
     private static final int AUTH_TOKEN_REQUEST_CODE = 123;
     private NestAPI mNest;
     private NestToken mToken;
@@ -40,6 +43,38 @@ public class NestActivity extends AppCompatActivity {
             mNest.setConfig(Constants.CLIENT_ID, Constants.CLIENT_SECRET, Constants.REDIRECT_URL);
             mNest.launchAuthFlow(this, AUTH_TOKEN_REQUEST_CODE);
         }
+
+        if (savedInstanceState != null) {
+            mThermostat = savedInstanceState.getParcelable(ARG_THERMOSTAT);
+        }
+
+        Log.v(TAG, "Started!");
+
+        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v(TAG, mThermostat.toString());
+            }
+        });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(ARG_THERMOSTAT, mThermostat);
+    }
+
+    /**
+     * Listens to get the first thermostat
+     */
+    private void fetchThermostat() {
+        mNest.addGlobalListener(new NestListener.GlobalListener() {
+            @Override
+            public void onUpdate(@NonNull GlobalUpdate update) {
+                // Get first thermostat
+                mThermostat = update.getThermostats().get(0);
+            }
+        });
     }
 
     /**
@@ -53,7 +88,8 @@ public class NestActivity extends AppCompatActivity {
             @Override
             public void onAuthSuccess() {
                 Log.v(TAG, "Authentication succeeded.");
-                // fetchData();
+                fetchThermostat();
+                Log.v(TAG, mThermostat.toString());
             }
 
             @Override
