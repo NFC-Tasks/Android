@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
+import com.firebase.client.Query;
 import com.firebase.ui.FirebaseRecyclerAdapter;
 
 import java.util.ArrayList;
@@ -34,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private TextToSpeech myTTS;
     private TaskAdapter mTaskAdapter;
     private FirebaseRecyclerAdapter<Tag, TagHolder> mFirebaseAdapter;
-    private Firebase mTagRef;
+    private Firebase mRef;
+    private Query mTagRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mTagRef = new Firebase("https://nfc-tasks.firebaseio.com/tags");
+        mRef = new Firebase("https://nfc-tasks.firebaseio.com/tags");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         // mTaskAdapter = new TaskAdapter(this, getTasks());
         // recyclerView.setAdapter(mTaskAdapter);
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagHolder>(Tag.class, R.layout.list_item_tag, TagHolder.class, mTagRef) {
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagHolder>(Tag.class, R.layout.list_item_tag, TagHolder.class, mRef) {
             @Override
             protected void populateViewHolder(TagHolder tagHolder, Tag tag, int i) {
                 tagHolder.bindTag(tag);

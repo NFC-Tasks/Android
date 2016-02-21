@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -47,6 +48,7 @@ public class TagReadActivity extends AppCompatActivity {
     private MusicTask mMusicTask;
     private DemoTask mDemoTask;
     private String mTagName;
+    private TextView mTextView;
 
     public static final String ARG_TAG = "argTag";
 
@@ -62,14 +64,13 @@ public class TagReadActivity extends AppCompatActivity {
             mTagName = getIntent().getStringExtra(ARG_TAG);
         }
 
-        TextView textView = (TextView) findViewById(R.id.tag_instructions);
-        textView.setText("Place phone on the " + mTagName + " tag...");
+        mTextView = (TextView) findViewById(R.id.tag_instructions);
+        mTextView.setText("Place phone on the " + mTagName + " tag...");
 
         // Create nest task
         mNestTask = new NestTask(this, 65, true);
         mMusicTask = new MusicTask(this, "Never Gonna Give You Up");
         mDemoTask = new DemoTask(this, "Rochester", "Michigan");
-
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null) {
@@ -135,6 +136,8 @@ public class TagReadActivity extends AppCompatActivity {
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
             if (Constants.MIME_TYPE.equals(intent.getType())) {
                 Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                // Tag found, update textview
+                mTextView.setText("Preparing tasks...");
                 new NdefReaderTask().execute(tag);
             } else {
                 Log.v(TAG, "Wrong mime type.");

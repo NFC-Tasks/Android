@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -18,6 +19,7 @@ import com.nestlabs.sdk.NestListener;
 import com.nestlabs.sdk.NestToken;
 import com.nestlabs.sdk.Thermostat;
 
+import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -94,18 +96,55 @@ public class DemoTask implements Task{
                             public void onInit(int status) {
                                 if(mTTS != null)
                                 {
+                                    mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                                        @Override
+                                        public void onStart(String utteranceId) {
+                                            Log.v(TAG, utteranceId);
+                                        }
+
+                                        @Override
+                                        public void onDone(String utteranceId) {
+                                            Log.v(TAG, utteranceId);
+                                            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=Rochester+MI"));
+                                            mActivity.startActivity(i);
+                                        }
+
+                                        @Override
+                                        public void onError(String utteranceId) {
+                                            Log.v(TAG, utteranceId);
+                                        }
+                                    });
+
                                     Log.wtf("sayWeather", "Not null");
                                     mTTS.setSpeechRate(0.8f);
-                                    mTTS.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
+                                    HashMap<String, String> map = new HashMap<String, String>();
+                                    map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "UniqueID");
+                                    mTTS.speak(speech, TextToSpeech.QUEUE_FLUSH, map);
                                 }else{
                                     Log.wtf("sayWeather", "Totally null");
                                 }
                             }
+
+
                         });
 
-                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=Rochester+MI"));
-                        mActivity.startActivity(i);
+                        mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                            @Override
+                            public void onStart(String utteranceId) {
+                                Log.v(TAG, utteranceId);
+                            }
 
+                            @Override
+                            public void onDone(String utteranceId) {
+                                Log.v(TAG, utteranceId);
+
+                            }
+
+                            @Override
+                            public void onError(String utteranceId) {
+                                Log.v(TAG, utteranceId);
+                            }
+                        });
                     }
                 });
     }
