@@ -1,11 +1,8 @@
 package com.tristanwiley.nfctasks;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -26,9 +23,9 @@ import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
-import java.util.Locale;
-
 public class MainActivity extends AppCompatActivity {
+    AlertDialog adActions;
+    AlertDialog ad;
     private TextToSpeech myTTS;
 
     @Override
@@ -57,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -71,15 +67,13 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_tag_write) {
             startTagWriteActivity();
             return true;
-        } else if(id == R.id.action_tag_read) {
+        } else if (id == R.id.action_tag_read) {
             startTagReadActivity();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
-    AlertDialog adActions;
 
     public void showActions() {
         final String names[] = {"Send Text", "Access Bluetooth", "Turn on Music", "Call Contact", "Read Weather"};
@@ -102,8 +96,6 @@ public class MainActivity extends AppCompatActivity {
         lv.setAdapter(adapter);
         adActions = alertDialog.show();
     }
-
-    AlertDialog ad;
 
     public void musicDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
@@ -157,18 +149,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void playMusic(String title, String artist) {
-        Intent intent = new Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH);
-        intent.putExtra(MediaStore.EXTRA_MEDIA_FOCUS,
-                MediaStore.Audio.Artists.ENTRY_CONTENT_TYPE);
-        intent.putExtra(MediaStore.EXTRA_MEDIA_TITLE, title);
-        intent.putExtra(SearchManager.QUERY, title);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        }
-    }
-
-    public void sayWeather(String city, String state){
+    public void sayWeather(String city, String state) {
         String temp = "http://api.wunderground.com/api/eb509ff7b3f893bf/conditions/q/" + state + "/" + city + ".json";
         Ion.with(getApplicationContext())
                 .load(temp.replace(" ", "%20"))
@@ -187,11 +168,10 @@ public class MainActivity extends AppCompatActivity {
                         myTTS = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
                             @Override
                             public void onInit(int status) {
-                                if(myTTS != null)
-                                {
+                                if (myTTS != null) {
                                     Log.wtf("sayWeather", "Not null");
                                     myTTS.speak(finalSpeach, TextToSpeech.QUEUE_FLUSH, null);
-                                }else{
+                                } else {
                                     Log.wtf("sayWeather", "Totally null");
                                 }
                             }

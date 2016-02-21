@@ -39,7 +39,7 @@ public class NestTask implements Task {
         String thermostatId = mThermostat.getDeviceId();
 
         // Set value based on temp scale
-        if(mFahrenheit) {
+        if (mFahrenheit) {
             mNest.thermostats.setTargetTemperatureF(thermostatId, mTargetValue);
         } else {
             mNest.thermostats.setTargetTemperatureC(thermostatId, mTargetValue);
@@ -61,7 +61,7 @@ public class NestTask implements Task {
         mNest = NestAPI.getInstance();
         mToken = Settings.loadAuthToken(mActivity);
 
-        if(mToken != null) {
+        if (mToken != null) {
             authenticate(mToken);
         } else {
             mNest.setConfig(Constants.NEST_CLIENT_ID, Constants.NEST_CLIENT_SECRET, Constants.REDIRECT_URL);
@@ -78,7 +78,7 @@ public class NestTask implements Task {
             public void onUpdate(@NonNull GlobalUpdate update) {
                 // Get first thermostat
                 mThermostat = update.getThermostats().get(0);
-                if(mThermostat != null) {
+                if (mThermostat != null) {
                     Log.v(TAG, mThermostat.toString());
                 }
             }

@@ -64,7 +64,7 @@ public class TagWriteActivity extends AppCompatActivity {
     private void enableTagWriteMode() {
         mWriteMode = true;
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        IntentFilter[] mWriteTagFilters = new IntentFilter[] { tagDetected };
+        IntentFilter[] mWriteTagFilters = new IntentFilter[]{tagDetected};
         mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, mWriteTagFilters, null);
     }
 
@@ -75,7 +75,7 @@ public class TagWriteActivity extends AppCompatActivity {
             NdefRecord record = NdefRecord.createMime(Constants.MIME_TYPE, getTagString().getBytes());
             NdefMessage message = new NdefMessage(record);
 
-            if(writeTag(message, detectedTag)) {
+            if (writeTag(message, detectedTag)) {
                 // SUCCESS!
                 Log.v(TAG, "Successfully wrote tag.");
             }
@@ -85,12 +85,12 @@ public class TagWriteActivity extends AppCompatActivity {
     private boolean writeTag(NdefMessage message, Tag tag) {
         try {
             Ndef ndef = Ndef.get(tag);
-            if(ndef != null) {
+            if (ndef != null) {
                 ndef.connect();
-                if(!ndef.isWritable()) {
+                if (!ndef.isWritable()) {
                     Log.v(TAG, "Error: Tag not writable.");
                     return false;
-                } else if(ndef.getMaxSize() < message.toByteArray().length) {
+                } else if (ndef.getMaxSize() < message.toByteArray().length) {
                     Log.v(TAG, "Error: Tag too small.");
                     return false;
                 }
@@ -98,12 +98,13 @@ public class TagWriteActivity extends AppCompatActivity {
                 return true;
             } else {
                 NdefFormatable format = NdefFormatable.get(tag);
-                if(format != null) {
+                if (format != null) {
                     try {
-                        format.connect();;
+                        format.connect();
+                        ;
                         format.format(message);
                         return true;
-                    } catch(IOException ioe) {
+                    } catch (IOException ioe) {
                         Log.v(TAG, ioe.getMessage());
                         return false;
                     }
@@ -111,7 +112,7 @@ public class TagWriteActivity extends AppCompatActivity {
                     return false;
                 }
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             Log.v(TAG, e.getMessage());
             return false;
         }

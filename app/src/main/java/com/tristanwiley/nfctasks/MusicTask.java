@@ -7,7 +7,7 @@ import android.provider.MediaStore;
 
 /**
  * Plays music.
- *
+ * <p/>
  * Created by adammcneilly on 2/20/16.
  */
 public class MusicTask implements Task {

@@ -47,10 +47,10 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/addSongAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add"
-        android:id="@+id/addSongAction"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:text="Add" />
 
 </LinearLayout>

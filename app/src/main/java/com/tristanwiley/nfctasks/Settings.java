@@ -7,7 +7,7 @@ import com.nestlabs.sdk.NestToken;
 
 /**
  * Settings for NEST API.
- *
+ * <p/>
  * Created by adammcneilly on 2/20/16.
  */
 public class Settings {

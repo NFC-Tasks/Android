@@ -25,7 +25,6 @@ import android.view.View;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
-import com.nestlabs.sdk.Callback;
 import com.nestlabs.sdk.GlobalUpdate;
 import com.nestlabs.sdk.NestAPI;
 import com.nestlabs.sdk.NestException;
@@ -37,8 +36,8 @@ import java.io.UnsupportedEncodingException;
 
 public class TagReadActivity extends AppCompatActivity {
     private static final String TAG = TagReadActivity.class.getSimpleName();
-    private NfcAdapter mNfcAdapter;
     private static final int AUTH_TOKEN_REQUEST_CODE = 123;
+    private NfcAdapter mNfcAdapter;
     private NestAPI mNest;
     private NestToken mToken;
     private Thermostat mThermostat;
@@ -59,7 +58,7 @@ public class TagReadActivity extends AppCompatActivity {
 
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if(mNfcAdapter == null) {
+        if (mNfcAdapter == null) {
             finish();
         }
 
@@ -80,7 +79,7 @@ public class TagReadActivity extends AppCompatActivity {
         mNest = NestAPI.getInstance();
         mToken = Settings.loadAuthToken(this);
 
-        if(mToken != null) {
+        if (mToken != null) {
             authenticate(mToken);
         } else {
             mNest.setConfig(Constants.NEST_CLIENT_ID, Constants.NEST_CLIENT_SECRET, Constants.REDIRECT_URL);
@@ -111,7 +110,7 @@ public class TagReadActivity extends AppCompatActivity {
         filters[0].addCategory(Intent.CATEGORY_DEFAULT);
         try {
             filters[0].addDataType(Constants.MIME_TYPE);
-        } catch(IntentFilter.MalformedMimeTypeException e) {
+        } catch (IntentFilter.MalformedMimeTypeException e) {
             Log.v(TAG, "Check your mime type.");
         }
 
@@ -126,13 +125,13 @@ public class TagReadActivity extends AppCompatActivity {
             } else {
                 Log.v(TAG, "Wrong mime type.");
             }
-        } else if(NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
+        } else if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             String[] techList = tag.getTechList();
             String searchedTech = Ndef.class.getName();
 
-            for(String tech : techList) {
-                if(searchedTech.equals(tech)) {
+            for (String tech : techList) {
+                if (searchedTech.equals(tech)) {
                     new NdefReaderTask().execute(tag);
                     break;
                 }
@@ -166,7 +165,7 @@ public class TagReadActivity extends AppCompatActivity {
             public void onUpdate(@NonNull GlobalUpdate update) {
                 // Get first thermostat
                 mThermostat = update.getThermostats().get(0);
-                if(mThermostat != null) {
+                if (mThermostat != null) {
                     Log.v(TAG, mThermostat.toString());
                 }
             }
@@ -184,7 +183,7 @@ public class TagReadActivity extends AppCompatActivity {
         }
     }
 
-    public void sayWeather(String city, String state){
+    public void sayWeather(String city, String state) {
         String temp = "http://api.wunderground.com/api/eb509ff7b3f893bf/conditions/q/" + state + "/" + city + ".json";
         Ion.with(getApplicationContext())
                 .load(temp.replace(" ", "%20"))
@@ -203,11 +202,10 @@ public class TagReadActivity extends AppCompatActivity {
                         mTTS = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
                             @Override
                             public void onInit(int status) {
-                                if(mTTS != null)
-                                {
+                                if (mTTS != null) {
                                     Log.wtf("sayWeather", "Not null");
                                     mTTS.speak(finalSpeach, TextToSpeech.QUEUE_FLUSH, null);
-                                }else{
+                                } else {
                                     Log.wtf("sayWeather", "Totally null");
                                 }
                             }
@@ -256,7 +254,7 @@ public class TagReadActivity extends AppCompatActivity {
             Tag tag = params[0];
 
             Ndef ndef = Ndef.get(tag);
-            if(ndef == null) {
+            if (ndef == null) {
                 Log.v(TAG, "NDEF not supported.");
                 return null;
             }
@@ -264,11 +262,11 @@ public class TagReadActivity extends AppCompatActivity {
             NdefMessage ndefMessage = ndef.getCachedNdefMessage();
 
             NdefRecord[] records = ndefMessage.getRecords();
-            for(NdefRecord ndefRecord : records) {
-                if(ndefRecord.getTnf() == NdefRecord.TNF_MIME_MEDIA) {
+            for (NdefRecord ndefRecord : records) {
+                if (ndefRecord.getTnf() == NdefRecord.TNF_MIME_MEDIA) {
                     try {
                         return readText(ndefRecord);
-                    } catch(UnsupportedEncodingException uee) {
+                    } catch (UnsupportedEncodingException uee) {
                         Log.v(TAG, uee.getMessage());
                     }
                 }
@@ -298,7 +296,7 @@ public class TagReadActivity extends AppCompatActivity {
             Log.v(TAG, "Read data: " + s);
 
             // If we read "nest", call thing
-            if(s.equals("nest")) {
+            if (s.equals("nest")) {
                 // Set temperature
                 mNestTask.run();
 

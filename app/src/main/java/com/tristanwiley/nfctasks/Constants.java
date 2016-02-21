@@ -2,7 +2,7 @@ package com.tristanwiley.nfctasks;
 
 /**
  * Constant values for connecting with NEST.
- *
+ * <p/>
  * Created by adammcneilly on 2/20/16.
  */
 public class Constants {

@@ -22,7 +22,7 @@ public class Tag {
         return operations;
     }
 
-    public void addOperation(Operation operation){
+    public void addOperation(Operation operation) {
         operations.add(operation);
     }
 }

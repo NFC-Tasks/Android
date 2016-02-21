@@ -1,7 +1,6 @@
 package com.tristanwiley.nfctasks;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -14,7 +13,7 @@ import com.nestlabs.sdk.Thermostat;
 
 /**
  * Reads and writes to the nest thermostat.
- *
+ * <p/>
  * Created by adammcneilly on 2/20/16.
  */
 public class NestHelper {
@@ -32,7 +31,7 @@ public class NestHelper {
         mNest = NestAPI.getInstance();
         mToken = Settings.loadAuthToken(mActivity);
 
-        if(mToken != null) {
+        if (mToken != null) {
             authenticate(mToken);
         } else {
             mNest.setConfig(Constants.NEST_CLIENT_ID, Constants.NEST_CLIENT_SECRET, Constants.REDIRECT_URL);
@@ -48,7 +47,7 @@ public class NestHelper {
             public void onUpdate(@NonNull GlobalUpdate update) {
                 // Get first thermostat
                 mThermostat = update.getThermostats().get(0);
-                if(mThermostat != null) {
+                if (mThermostat != null) {
                     Log.v(TAG, mThermostat.toString());
                 }
             }

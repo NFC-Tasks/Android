@@ -22,7 +22,7 @@ public class Operation {
         return dataForTask;
     }
 
-    public void addTask(String task){
+    public void addTask(String task) {
         dataForTask.add(task);
     }
 }
