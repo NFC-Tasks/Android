@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import com.nestlabs.sdk.NestToken;
 
 /**
- * Settings for NEST connections.
+ * Settings for NEST API.
  *
  * Created by adammcneilly on 2/20/16.
  */

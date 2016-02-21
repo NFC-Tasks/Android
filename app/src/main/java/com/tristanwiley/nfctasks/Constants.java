@@ -11,4 +11,5 @@ public class Constants {
     public static final String HOUND_CLIENT_ID = "r0XoKfO_XbYQ4WvpBVycxg==";
     public static final String HOUND_CLIENT_SECRET = "18a0yRkZnI5AQ0dgQNZU9Sf1GxkfDy18hpIISVbmfu_kXx96E0viQgIEdnymCsBekUled72WrEd6bPmCul8DsQ==";
     public static final String REDIRECT_URL = "https://androidessence.com";
+    public static final String MIME_TYPE = "application/tristanwiley.nfctasks";
 }

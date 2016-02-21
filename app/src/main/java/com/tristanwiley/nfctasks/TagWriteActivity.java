@@ -9,38 +9,44 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
-import android.nfc.tech.NfcA;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.Toast;
+import android.util.Log;
+import android.view.View;
 
 import java.io.IOException;
 
-/**
- * Activity for writing information to an NFC tag.
- *
- * Created by adammcneilly on 2/20/16.
- */
-public class TagWriteActivity extends AppCompatActivity{
-    private boolean mWriteMode = false;
-    private NfcAdapter mNFCAdapter;
-    private PendingIntent mNFCPendingIntent;
-
-    private String mMimeType = "application/tristanwiley.nfctasks";
+public class TagWriteActivity extends AppCompatActivity {
+    private static final String TAG = TagWriteActivity.class.getSimpleName();
+    private NfcAdapter mNfcAdapter;
+    private PendingIntent mNfcPendingIntent;
+    private boolean mWriteMode;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tag_write);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Start listening
-        mNFCAdapter = NfcAdapter.getDefaultAdapter(this);
-        mNFCPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, TagWriteActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        setupNfc();
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+    }
+
+    private void setupNfc() {
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        mNfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, TagWriteActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
     }
 
     @Override
@@ -52,66 +58,53 @@ public class TagWriteActivity extends AppCompatActivity{
     @Override
     protected void onPause() {
         super.onPause();
-        mNFCAdapter.disableForegroundDispatch(this);
+        mNfcAdapter.disableForegroundDispatch(this);
     }
 
-    /**
-     * Begins tag write mode and waits for an NFC tag to be detected.
-     */
     private void enableTagWriteMode() {
         mWriteMode = true;
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         IntentFilter[] mWriteTagFilters = new IntentFilter[] { tagDetected };
-        mNFCAdapter.enableForegroundDispatch(this, mNFCPendingIntent, mWriteTagFilters, null);
+        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, mWriteTagFilters, null);
     }
 
-    /**
-     * Called when a new tag is detected.
-     */
     @Override
     protected void onNewIntent(Intent intent) {
-        // If we are in tag writing mode and a tag is detected, write to it.
-        if(mWriteMode && NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+        if (mWriteMode && NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            NdefRecord record = NdefRecord.createMime(mMimeType, getFlagString().getBytes());
+            NdefRecord record = NdefRecord.createMime(Constants.MIME_TYPE, getTagString().getBytes());
             NdefMessage message = new NdefMessage(record);
 
             if(writeTag(message, detectedTag)) {
-                //TODO: Success!
-                Toast.makeText(this, "SUCCESS!", Toast.LENGTH_SHORT).show();
+                // SUCCESS!
+                Log.v(TAG, "Successfully wrote tag.");
             }
         }
     }
 
-    /**
-     * Writes a message to a tag and returns true if successful.
-     */
     private boolean writeTag(NdefMessage message, Tag tag) {
-        int size = message.toByteArray().length;
         try {
             Ndef ndef = Ndef.get(tag);
             if(ndef != null) {
                 ndef.connect();
                 if(!ndef.isWritable()) {
-                    Toast.makeText(this, "Error: tag not writable!", Toast.LENGTH_SHORT).show();
+                    Log.v(TAG, "Error: Tag not writable.");
+                    return false;
+                } else if(ndef.getMaxSize() < message.toByteArray().length) {
+                    Log.v(TAG, "Error: Tag too small.");
                     return false;
                 }
-
-                if(ndef.getMaxSize() < size) {
-                    Toast.makeText(this, "Error: tag too small.", Toast.LENGTH_SHORT).show();;
-                    return false;
-                }
-
                 ndef.writeNdefMessage(message);
                 return true;
             } else {
                 NdefFormatable format = NdefFormatable.get(tag);
-                if (format != null) {
+                if(format != null) {
                     try {
-                        format.connect();
+                        format.connect();;
                         format.format(message);
                         return true;
-                    } catch (IOException ioe) {
+                    } catch(IOException ioe) {
+                        Log.v(TAG, ioe.getMessage());
                         return false;
                     }
                 } else {
@@ -119,11 +112,12 @@ public class TagWriteActivity extends AppCompatActivity{
                 }
             }
         } catch(Exception e) {
+            Log.v(TAG, e.getMessage());
             return false;
         }
     }
 
-    private String getFlagString() {
-        return "Test flag string.";
+    private String getTagString() {
+        return "nest";
     }
 }

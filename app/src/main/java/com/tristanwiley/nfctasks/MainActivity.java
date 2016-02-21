@@ -71,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_tag_write) {
             startTagWriteActivity();
             return true;
-        } else if (id == R.id.action_nest) {
-            startNestActivity();
+        } else if(id == R.id.action_tag_read) {
+            startTagReadActivity();
             return true;
         }
 
@@ -202,13 +202,13 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void startNestActivity() {
-        Intent nest = new Intent(this, NestActivity.class);
-        startActivity(nest);
-    }
-
     private void startTagWriteActivity() {
         Intent tagWrite = new Intent(this, TagWriteActivity.class);
         startActivity(tagWrite);
+    }
+
+    private void startTagReadActivity() {
+        Intent tagRead = new Intent(this, TagReadActivity.class);
+        startActivity(tagRead);
     }
 }

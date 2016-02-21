@@ -9,15 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.tristanwiley.nfctasks.NestActivity"
-    tools:showIn="@layout/activity_nest">
-
-    <TextView
-        android:id="@+id/target_temperature"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:gravity="center"
-        android:text="@string/not_available"/>
+    tools:context="com.adammcneilly.mhacksrefactor.TagReadActivity"
+    tools:showIn="@layout/activity_tag_read">
 
 </RelativeLayout>
