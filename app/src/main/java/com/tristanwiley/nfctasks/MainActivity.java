@@ -78,10 +78,6 @@ public class MainActivity extends AppCompatActivity {
         };
 
         recyclerView.setAdapter(mFirebaseAdapter);
-
-        ItemTouchHelper.Callback callback = new TaskTouchHelper(mTaskAdapter);
-        ItemTouchHelper helper = new ItemTouchHelper(callback);
-        helper.attachToRecyclerView(recyclerView);
     }
 
     private List<Task> getTasks() {
