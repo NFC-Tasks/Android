@@ -3,6 +3,7 @@ package com.tristanwiley.nfctasks;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.AlarmClock;
 import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -56,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 //                showActions();
-                isTargetAvalible("003-08-0338");
+//                isTargetAvalible("003-08-0338");
+                setAlarm("NFC", 1, 10);
             }
         });
 
@@ -154,6 +156,14 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), name, Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    public void setAlarm(String name, int hour, int minute){
+        Intent i = new Intent(AlarmClock.ACTION_SET_ALARM);
+        i.putExtra(AlarmClock.EXTRA_MESSAGE, name);
+        i.putExtra(AlarmClock.EXTRA_HOUR, hour);
+        i.putExtra(AlarmClock.EXTRA_MINUTES, minute);
+        startActivity(i);
     }
 
     public void showActions() {
