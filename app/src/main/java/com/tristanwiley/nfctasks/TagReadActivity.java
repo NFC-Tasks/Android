@@ -2,6 +2,7 @@ package com.tristanwiley.nfctasks;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.app.SearchManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NdefMessage;
@@ -11,6 +12,8 @@ import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,6 +22,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 import com.nestlabs.sdk.Callback;
 import com.nestlabs.sdk.GlobalUpdate;
 import com.nestlabs.sdk.NestAPI;
@@ -36,6 +42,7 @@ public class TagReadActivity extends AppCompatActivity {
     private NestAPI mNest;
     private NestToken mToken;
     private Thermostat mThermostat;
+    private TextToSpeech mTTS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,6 +174,51 @@ public class TagReadActivity extends AppCompatActivity {
         });
     }
 
+    public void playMusic(String title, String artist) {
+        Intent intent = new Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH);
+        intent.putExtra(MediaStore.EXTRA_MEDIA_FOCUS,
+                MediaStore.Audio.Artists.ENTRY_CONTENT_TYPE);
+        intent.putExtra(MediaStore.EXTRA_MEDIA_TITLE, title);
+        intent.putExtra(SearchManager.QUERY, title);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+    public void sayWeather(String city, String state){
+        String temp = "http://api.wunderground.com/api/eb509ff7b3f893bf/conditions/q/" + state + "/" + city + ".json";
+        Ion.with(getApplicationContext())
+                .load(temp.replace(" ", "%20"))
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        JsonObject current = result.get("current_observation").getAsJsonObject();
+                        String weather = current.get("weather").getAsString();
+                        String temp = current.get("temp_f").getAsString();
+                        String feelsLike = current.get("feelslike_f").getAsString();
+                        final String finalSpeach = "It is currently " + weather + " outside.  It is " + temp + " degrees out and it feels like " + feelsLike + " degrees.";
+
+                        Log.wtf("sayWeather", finalSpeach);
+                        // speak straight away
+                        mTTS = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+                            @Override
+                            public void onInit(int status) {
+                                if(mTTS != null)
+                                {
+                                    Log.wtf("sayWeather", "Not null");
+                                    mTTS.speak(finalSpeach, TextToSpeech.QUEUE_FLUSH, null);
+                                }else{
+                                    Log.wtf("sayWeather", "Totally null");
+                                }
+                            }
+                        });
+
+
+                    }
+                });
+    }
+
     /**
      * Authenticate with the Nest API and start listening for updates.
      *
@@ -248,6 +300,7 @@ public class TagReadActivity extends AppCompatActivity {
 
             // If we read "nest", call thing
             if(s.equals("nest") && mThermostat != null) {
+                // Set temperature
                 String thermostatID = mThermostat.getDeviceId();
                 mNest.thermostats.setTargetTemperatureF(thermostatID, 65, new Callback() {
                     @Override
@@ -260,6 +313,12 @@ public class TagReadActivity extends AppCompatActivity {
                         Log.v(TAG, "Unable to set temperature: " + exception.getMessage());
                     }
                 });
+
+                // Say weather first
+                sayWeather("Ann Arbor", "Michigan");
+
+                // Play kanye
+                playMusic("All I Do Is Win", "DJ Khaled");
             }
         }
     }
