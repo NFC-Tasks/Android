@@ -22,6 +22,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
+import com.firebase.ui.FirebaseRecyclerAdapter;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -35,16 +37,18 @@ public class MainActivity extends AppCompatActivity {
     AlertDialog ad;
     private TextToSpeech myTTS;
     private TaskAdapter mTaskAdapter;
+    private FirebaseRecyclerAdapter<Tag, TagHolder> mFirebaseAdapter;
+    private Firebase mTagRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        new Twilio().sendMessage(getApplicationContext(), "5867442919", "Good shit fam");
-//        sayWeather("Ann Arbor", "MI");
+        mTagRef = new Firebase("https://nfc-tasks.firebaseio.com/tags");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -65,8 +69,17 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
 
-        mTaskAdapter = new TaskAdapter(this, getTasks());
-        recyclerView.setAdapter(mTaskAdapter);
+        // mTaskAdapter = new TaskAdapter(this, getTasks());
+        // recyclerView.setAdapter(mTaskAdapter);
+
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagHolder>(Tag.class, R.layout.list_item_tag, TagHolder.class, mTagRef) {
+            @Override
+            protected void populateViewHolder(TagHolder tagHolder, Tag tag, int i) {
+                tagHolder.bindTag(tag);
+            }
+        };
+
+        recyclerView.setAdapter(mFirebaseAdapter);
 
         ItemTouchHelper.Callback callback = new TaskTouchHelper(mTaskAdapter);
         ItemTouchHelper helper = new ItemTouchHelper(callback);

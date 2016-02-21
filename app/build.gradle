@@ -26,4 +26,5 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile 'com.koushikdutta.ion:ion:2.+'
     compile 'com.nestlabs:android-sdk:1.0.0'
+    compile 'com.firebaseui:firebase-ui:0.3.1'
 }
