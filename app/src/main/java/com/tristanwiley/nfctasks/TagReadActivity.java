@@ -44,6 +44,7 @@ public class TagReadActivity extends AppCompatActivity {
     private TextToSpeech mTTS;
     private NestTask mNestTask;
     private MusicTask mMusicTask;
+    private NestWeatherTask mNestWeatherTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,7 @@ public class TagReadActivity extends AppCompatActivity {
         // Create nest task
         mNestTask = new NestTask(this, 65, true);
         mMusicTask = new MusicTask(this, "Never Gonna Give You Up");
+        mNestWeatherTask = new NestWeatherTask(this, "Rochester", "Michigan");
 
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -297,15 +299,16 @@ public class TagReadActivity extends AppCompatActivity {
 
             // If we read "nest", call thing
             if (s.equals("nest")) {
+                mNestWeatherTask.run();
                 // Set temperature
-                mNestTask.run();
+                // mNestTask.run();
 
                 // Say weather first
-                sayWeather("Ann Arbor", "Michigan");
+                // sayWeather("Ann Arbor", "Michigan");
 
                 //NGGYU
-                Log.v(TAG, mMusicTask.toString());
-                mMusicTask.run();
+                // Log.v(TAG, mMusicTask.toString());
+                // mMusicTask.run();
             }
         }
     }
