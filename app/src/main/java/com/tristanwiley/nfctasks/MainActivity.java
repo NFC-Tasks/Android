@@ -25,6 +25,9 @@ import android.widget.Toast;
 import com.firebase.client.Firebase;
 import com.firebase.client.Query;
 import com.firebase.ui.FirebaseRecyclerAdapter;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showActions();
+//                showActions();
+                isTargetAvalible("003-08-0338");
             }
         });
 
@@ -127,6 +131,31 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void openMap(String destination){
+        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + destination));
+        startActivity(i);
+    }
+
+    public void isTargetAvalible(String productId){
+        Ion.with(getApplicationContext())
+                .load("https://api.target.com/products/v3/" + productId + "?id_type=dpci&key=J5PsS2XGuqCnkdQq0Let6RSfvU7oyPwF")
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        JsonObject mainObj = result.get("product_composite_response").getAsJsonObject().get("items").getAsJsonArray().get(0).getAsJsonObject();
+                        String name = mainObj.get("data_page_link").getAsString().split("/p/")[1].split("/-/")[0].replace("-", " ");
+                        boolean avalible = mainObj.get("is_orderable").getAsBoolean();
+                        if(avalible){
+
+                        }else{
+
+                        }
+                        Toast.makeText(getApplicationContext(), name, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     public void showActions() {
         final String names[] = {"Send Text", "Access Bluetooth", "Turn on Music", "Call Contact", "Read Weather"};
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
@@ -134,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
         View convertView = inflater.inflate(R.layout.add_action, null);
         alertDialog.setView(convertView);
 //        alertDialog.setTitle("");
+
         ListView lv = (ListView) convertView.findViewById(R.id.choicesList);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, names);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {

@@ -1,7 +1,13 @@
 package com.tristanwiley.nfctasks;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.speech.tts.TextToSpeech;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.google.gson.JsonObject;
