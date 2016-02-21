@@ -18,12 +18,14 @@ import com.nestlabs.sdk.NestListener;
 import com.nestlabs.sdk.NestToken;
 import com.nestlabs.sdk.Thermostat;
 
+import java.util.Locale;
+
 /**
- * Sets thermostat based on weather.
+ * Task that runs everything for our demo.
  *
  * Created by adammcneilly on 2/21/16.
  */
-public class NestWeatherTask implements Task{
+public class DemoTask implements Task{
     private static final String TAG = NestTask.class.getSimpleName();
     private static final int AUTH_TOKEN_REQUEST_CODE = 123;
     private NestAPI mNest;
@@ -35,7 +37,7 @@ public class NestWeatherTask implements Task{
     private long mTargetValue;
     private TextToSpeech mTTS;
 
-    public NestWeatherTask(Activity activity, String city, String state) {
+    public DemoTask(Activity activity, String city, String state) {
         this.mActivity = activity;
         this.mCity = city;
         this.mState = state;
@@ -64,7 +66,6 @@ public class NestWeatherTask implements Task{
                             mTargetValue = 70;
                         }
 
-                        // Only set value if thermostat isn't null
                         //TODO: Fix hack
                         if(mThermostat != null) {
                             // set value
@@ -84,7 +85,7 @@ public class NestWeatherTask implements Task{
                             Log.v(TAG, "Thermostat is null.");
                         }
 
-                        final String speech = "It is currently " + temp + " degrees outside. I will set your thermostat to " + mTargetValue + ". Have a safe drive home.";
+                        final String speech = "It is currently " + temp + " degrees outside. I will set your thermostat to " + mTargetValue + ". I will now begin navigation home, have a safe drive.";
 
                         Log.wtf("sayWeather", speech);
                         // speak straight away
@@ -94,12 +95,17 @@ public class NestWeatherTask implements Task{
                                 if(mTTS != null)
                                 {
                                     Log.wtf("sayWeather", "Not null");
+                                    mTTS.setSpeechRate(0.8f);
                                     mTTS.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
                                 }else{
                                     Log.wtf("sayWeather", "Totally null");
                                 }
                             }
                         });
+
+                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=Rochester+MI"));
+                        mActivity.startActivity(i);
+
                     }
                 });
     }
@@ -174,6 +180,6 @@ public class NestWeatherTask implements Task{
 
     @Override
     public String toString() {
-        return String.format("Setting Nest thermostat target temperature to %dF", mTargetValue);
+        return "DO ALL THE THINGS!";
     }
 }

@@ -45,7 +45,7 @@ public class TagReadActivity extends AppCompatActivity {
     private TextToSpeech mTTS;
     private NestTask mNestTask;
     private MusicTask mMusicTask;
-    private NestWeatherTask mNestWeatherTask;
+    private DemoTask mDemoTask;
     private String mTagName;
 
     public static final String ARG_TAG = "argTag";
@@ -68,7 +68,7 @@ public class TagReadActivity extends AppCompatActivity {
         // Create nest task
         mNestTask = new NestTask(this, 65, true);
         mMusicTask = new MusicTask(this, "Never Gonna Give You Up");
-        mNestWeatherTask = new NestWeatherTask(this, "Rochester", "Michigan");
+        mDemoTask = new DemoTask(this, "Rochester", "Michigan");
 
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -311,7 +311,7 @@ public class TagReadActivity extends AppCompatActivity {
 
             // If we read "nest", call thing
             if (s.equals("nest")) {
-                mNestWeatherTask.run();
+                mDemoTask.run();
                 // Set temperature
                 // mNestTask.run();
 
