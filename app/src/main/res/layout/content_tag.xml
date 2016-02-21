@@ -5,11 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.tristanwiley.nfctasks.MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:context="com.tristanwiley.nfctasks.TagActivity"
+    tools:showIn="@layout/activity_tag">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/tag_recycler_view"
+        android:id="@+id/task_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
 </RelativeLayout>
