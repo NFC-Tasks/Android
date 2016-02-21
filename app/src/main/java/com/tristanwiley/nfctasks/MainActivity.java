@@ -111,18 +111,18 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.action_tag_write) {
-            startTagWriteActivity();
-            return true;
-        } else if (id == R.id.action_tag_read) {
-            startTagReadActivity();
-            return true;
-        } else if(id == R.id.action_run) {
-            runTests();
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        } else if (id == R.id.action_tag_write) {
+//            startTagWriteActivity();
+//            return true;
+//        } else if (id == R.id.action_tag_read) {
+//            startTagReadActivity();
+//            return true;
+//        } else if(id == R.id.action_run) {
+//            runTests();
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }

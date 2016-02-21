@@ -7,29 +7,29 @@
         android:id="@+id/action_add_tag"
         android:title="@string/action_add_tag"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_run"
-        android:orderInCategory="96"
-        android:title="@string/action_run"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_nest"
-        android:orderInCategory="97"
-        android:title="@string/action_nest"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_tag_read"
-        android:orderInCategory="98"
-        android:title="@string/action_tag_read"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_tag_write"
-        android:orderInCategory="99"
-        android:title="@string/action_tag_write"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+    <!--<item-->
+        <!--android:id="@+id/action_run"-->
+        <!--android:orderInCategory="96"-->
+        <!--android:title="@string/action_run"-->
+        <!--app:showAsAction="never" />-->
+    <!--<item-->
+        <!--android:id="@+id/action_nest"-->
+        <!--android:orderInCategory="97"-->
+        <!--android:title="@string/action_nest"-->
+        <!--app:showAsAction="never" />-->
+    <!--<item-->
+        <!--android:id="@+id/action_tag_read"-->
+        <!--android:orderInCategory="98"-->
+        <!--android:title="@string/action_tag_read"-->
+        <!--app:showAsAction="never" />-->
+    <!--<item-->
+        <!--android:id="@+id/action_tag_write"-->
+        <!--android:orderInCategory="99"-->
+        <!--android:title="@string/action_tag_write"-->
+        <!--app:showAsAction="never" />-->
+    <!--<item-->
+        <!--android:id="@+id/action_settings"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="@string/action_settings"-->
+        <!--app:showAsAction="never" />-->
 </menu>

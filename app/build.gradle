@@ -19,6 +19,12 @@ android {
     }
 }
 
+repositories {
+    maven {
+        url  "http://dl.bintray.com/androidessence/maven"
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
@@ -27,4 +33,5 @@ dependencies {
     compile 'com.koushikdutta.ion:ion:2.+'
     compile 'com.nestlabs:android-sdk:1.0.0'
     compile 'com.firebaseui:firebase-ui:0.3.1'
+    compile 'com.androidessence:materialdesignspecs:1.0.4'
 }
