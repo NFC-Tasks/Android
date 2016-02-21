@@ -9,4 +9,6 @@
     <string name="action_tag_read">Tag Read</string>
     <string name="action_run">Run</string>
     <string name="title_activity_tag">TagActivity</string>
+    <string name="title_activity_target">Target Availability</string>
+    <string name="action_target">Target Availability</string>
 </resources>

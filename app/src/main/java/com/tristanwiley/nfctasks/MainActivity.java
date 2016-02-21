@@ -129,6 +129,14 @@ public class MainActivity extends AppCompatActivity {
 //            return true;
 //        }
 
+        if(id == R.id.action_target) {
+            startTargetActivity();
+            return true;
+        } else if(id == R.id.action_tag_write) {
+            startTagWriteActivity();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -248,5 +256,10 @@ public class MainActivity extends AppCompatActivity {
     private void startTagReadActivity() {
         Intent tagRead = new Intent(this, TagReadActivity.class);
         startActivity(tagRead);
+    }
+
+    private void startTargetActivity() {
+        Intent target = new Intent(this, TargetActivity.class);
+        startActivity(target);
     }
 }
