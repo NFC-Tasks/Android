@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -65,6 +66,10 @@ public class MainActivity extends AppCompatActivity {
 
         TaskAdapter taskAdapter = new TaskAdapter(this, getTasks());
         recyclerView.setAdapter(taskAdapter);
+
+        ItemTouchHelper.Callback callback = new TaskTouchHelper(taskAdapter);
+        ItemTouchHelper helper = new ItemTouchHelper(callback);
+        helper.attachToRecyclerView(recyclerView);
     }
 
     private List<Task> getTasks() {

@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,6 +38,16 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     @Override
     public int getItemCount() {
         return mTasks.size();
+    }
+
+    public void remove(int position) {
+        mTasks.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void swap(int firstPosition, int secondPosition){
+        Collections.swap(mTasks, firstPosition, secondPosition);
+        notifyItemMoved(firstPosition, secondPosition);
     }
 
     public class TaskViewHolder extends RecyclerView.ViewHolder {

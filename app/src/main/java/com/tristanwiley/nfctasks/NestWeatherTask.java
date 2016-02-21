@@ -2,6 +2,7 @@ package com.tristanwiley.nfctasks;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.util.Log;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.nestlabs.sdk.Callback;
 import com.nestlabs.sdk.GlobalUpdate;
 import com.nestlabs.sdk.NestAPI;
 import com.nestlabs.sdk.NestException;
@@ -64,7 +66,17 @@ public class NestWeatherTask implements Task{
 
                         // set value
                         String thermostatId = mThermostat.getDeviceId();
-                        mNest.thermostats.setTargetTemperatureF(thermostatId, mTargetValue);
+                        mNest.thermostats.setTargetTemperatureF(thermostatId, mTargetValue, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.v(TAG, "Success!");
+                            }
+
+                            @Override
+                            public void onFailure(NestException exception) {
+                                Log.v(TAG, exception.getMessage());
+                            }
+                        });
 
                         final String speech = "It is currently " + temp + " degrees outside. I will set your thermostat to " + mTargetValue + ". Have a safe drive home.";
 
@@ -82,8 +94,6 @@ public class NestWeatherTask implements Task{
                                 }
                             }
                         });
-
-
                     }
                 });
     }
