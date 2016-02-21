@@ -1,10 +1,12 @@
 package com.tristanwiley.nfctasks;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -23,9 +25,11 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
-import com.tristanwiley.nfctasks.Utils.Twilio;
+
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
+    private TextToSpeech myTTS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 //        new Twilio().sendMessage(getApplicationContext(), "5867442919", "Good shit fam");
+//        sayWeather("Ann Arbor", "MI");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -53,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -64,10 +68,10 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        } else if(id == R.id.action_tag_write) {
+        } else if (id == R.id.action_tag_write) {
             startTagWriteActivity();
             return true;
-        } else if(id == R.id.action_nest) {
+        } else if (id == R.id.action_nest) {
             startNestActivity();
             return true;
         }
@@ -76,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     AlertDialog adActions;
+
     public void showActions() {
         final String names[] = {"Send Text", "Access Bluetooth", "Turn on Music", "Call Contact", "Read Weather"};
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
@@ -99,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     AlertDialog ad;
+
     public void musicDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
         LayoutInflater inflater = getLayoutInflater();
@@ -118,9 +124,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 EditText et = (EditText) convertView.findViewById(R.id.songPath);
-                if(!et.getText().toString().equals("")){
+                if (!et.getText().toString().equals("")) {
                     //TODO add to database and stuff
-                }else{
+                } else {
                     Toast.makeText(getApplicationContext(), "Enter a path", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -144,16 +150,7 @@ public class MainActivity extends AppCompatActivity {
                 //TODO add to database and list and stuff
                 ad.dismiss();
                 adActions.dismiss();
-
-//                Log.wtf("PATH", uri.getPath());
-//                String path = uri.getEncodedPath();
-//
-//                et.setText(path);
-//                Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-//                viewIntent.setDataAndType(uri, "audio/*");
-//                startActivity(Intent.createChooser(viewIntent, null));
-
-            }else{
+            } else {
                 Log.wtf("OnActivityResult", "Request Code not okay :(");
             }
         }
@@ -165,12 +162,44 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(MediaStore.EXTRA_MEDIA_FOCUS,
                 MediaStore.Audio.Artists.ENTRY_CONTENT_TYPE);
         intent.putExtra(MediaStore.EXTRA_MEDIA_TITLE, title);
-//        intent.putExtra(MediaStore.EXTRA_MEDIA_ARTIST, artist);
         intent.putExtra(SearchManager.QUERY, title);
-//        intent.putExtra(SearchManager.QUERY, artist);
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
+    }
+
+    public void sayWeather(String city, String state){
+        String temp = "http://api.wunderground.com/api/eb509ff7b3f893bf/conditions/q/" + state + "/" + city + ".json";
+        Ion.with(getApplicationContext())
+                .load(temp.replace(" ", "%20"))
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        JsonObject current = result.get("current_observation").getAsJsonObject();
+                        String weather = current.get("weather").getAsString();
+                        String temp = current.get("temp_f").getAsString();
+                        String feelsLike = current.get("feelslike_f").getAsString();
+                        final String finalSpeach = "It is currently " + weather + " outside.  It is " + temp + " degrees out and it feels like " + feelsLike + " degrees.";
+
+                        Log.wtf("sayWeather", finalSpeach);
+                        // speak straight away
+                        myTTS = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+                            @Override
+                            public void onInit(int status) {
+                                if(myTTS != null)
+                                {
+                                    Log.wtf("sayWeather", "Not null");
+                                    myTTS.speak(finalSpeach, TextToSpeech.QUEUE_FLUSH, null);
+                                }else{
+                                    Log.wtf("sayWeather", "Totally null");
+                                }
+                            }
+                        });
+
+
+                    }
+                });
     }
 
     private void startNestActivity() {
