@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     AlertDialog adActions;
     AlertDialog ad;
     private TextToSpeech myTTS;
+    private TaskAdapter mTaskAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,10 +65,10 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
 
-        TaskAdapter taskAdapter = new TaskAdapter(this, getTasks());
-        recyclerView.setAdapter(taskAdapter);
+        mTaskAdapter = new TaskAdapter(this, getTasks());
+        recyclerView.setAdapter(mTaskAdapter);
 
-        ItemTouchHelper.Callback callback = new TaskTouchHelper(taskAdapter);
+        ItemTouchHelper.Callback callback = new TaskTouchHelper(mTaskAdapter);
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(recyclerView);
     }
@@ -80,6 +81,10 @@ public class MainActivity extends AppCompatActivity {
         tasks.add(new WeatherTask(this, "Ann Arbor", "Michigan"));
 
         return tasks;
+    }
+
+    private void runTests() {
+
     }
 
     @Override
@@ -182,39 +187,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    public void sayWeather(String city, String state) {
-        String temp = "http://api.wunderground.com/api/eb509ff7b3f893bf/conditions/q/" + state + "/" + city + ".json";
-        Ion.with(getApplicationContext())
-                .load(temp.replace(" ", "%20"))
-                .asJsonObject()
-                .setCallback(new FutureCallback<JsonObject>() {
-                    @Override
-                    public void onCompleted(Exception e, JsonObject result) {
-                        JsonObject current = result.get("current_observation").getAsJsonObject();
-                        String weather = current.get("weather").getAsString();
-                        String temp = current.get("temp_f").getAsString();
-                        String feelsLike = current.get("feelslike_f").getAsString();
-                        final String finalSpeach = "It is currently " + weather + " outside.  It is " + temp + " degrees out and it feels like " + feelsLike + " degrees.";
-
-                        Log.wtf("sayWeather", finalSpeach);
-                        // speak straight away
-                        myTTS = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-                            @Override
-                            public void onInit(int status) {
-                                if (myTTS != null) {
-                                    Log.wtf("sayWeather", "Not null");
-                                    myTTS.speak(finalSpeach, TextToSpeech.QUEUE_FLUSH, null);
-                                } else {
-                                    Log.wtf("sayWeather", "Totally null");
-                                }
-                            }
-                        });
-
-
-                    }
-                });
     }
 
     private void startTagWriteActivity() {
