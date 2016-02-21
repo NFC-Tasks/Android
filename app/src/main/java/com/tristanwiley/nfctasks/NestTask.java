@@ -114,4 +114,9 @@ public class NestTask implements Task {
             }
         });
     }
+
+    @Override
+    public String toString() {
+        return String.format("Setting Nest thermostat target temperature to %d%s", mTargetValue, (mFahrenheit ? "F" : "C"));
+    }
 }

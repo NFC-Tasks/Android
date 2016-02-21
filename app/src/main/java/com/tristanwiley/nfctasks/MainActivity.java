@@ -7,6 +7,8 @@ import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +24,10 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     AlertDialog adActions;
@@ -45,6 +51,30 @@ public class MainActivity extends AppCompatActivity {
                 showActions();
             }
         });
+
+        setupRecyclerView();
+    }
+
+    private void setupRecyclerView() {
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.task_recycler_view);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
+
+        TaskAdapter taskAdapter = new TaskAdapter(this, getTasks());
+        recyclerView.setAdapter(taskAdapter);
+    }
+
+    private List<Task> getTasks() {
+        List<Task> tasks = new ArrayList<>();
+
+        tasks.add(new NestTask(this, 65, true));
+        tasks.add(new MusicTask(this, "Never Gonna Give You Up"));
+        tasks.add(new WeatherTask(this, "Ann Arbor", "Michigan"));
+
+        return tasks;
     }
 
     @Override
