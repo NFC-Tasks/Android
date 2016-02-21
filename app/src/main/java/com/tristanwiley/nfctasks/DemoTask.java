@@ -19,6 +19,7 @@ import com.nestlabs.sdk.NestException;
 import com.nestlabs.sdk.NestListener;
 import com.nestlabs.sdk.NestToken;
 import com.nestlabs.sdk.Thermostat;
+import com.tristanwiley.nfctasks.Utils.Twilio;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -88,7 +89,10 @@ public class DemoTask implements Task{
                             Log.v(TAG, "Thermostat is null.");
                         }
 
-                        final String speech = "It is currently " + temp + " degrees outside. I will set your thermostat to " + mTargetValue + ". I will now begin navigation home, have a safe drive.";
+                        final String speech = "It is currently " + temp + " degrees outside. I will set your thermostat to " + mTargetValue + ". I have sent a text to 315-572-9525. I will now begin navigation home, have a safe drive.";
+
+                        Twilio twilio = new Twilio();
+                        twilio.sendMessage(mActivity, "13155729525", "Testing!");
 
                         Log.wtf("sayWeather", speech);
                         // speak straight away
@@ -117,7 +121,7 @@ public class DemoTask implements Task{
                                     });
 
                                     Log.wtf("sayWeather", "Not null");
-                                    mTTS.setSpeechRate(0.8f);
+                                    mTTS.setSpeechRate(0.9f);
                                     HashMap<String, String> map = new HashMap<String, String>();
                                     map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "UniqueID");
                                     mTTS.speak(speech, TextToSpeech.QUEUE_FLUSH, map);

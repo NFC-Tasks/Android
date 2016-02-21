@@ -314,19 +314,8 @@ public class TagReadActivity extends AppCompatActivity {
 
             Log.v(TAG, "Read data: " + s);
 
-            // If we read "nest", call thing
-            if (s.equals("nest")) {
-                mDemoTask.run();
-                // Set temperature
-                // mNestTask.run();
-
-                // Say weather first
-                // sayWeather("Ann Arbor", "Michigan");
-
-                //NGGYU
-                // Log.v(TAG, mMusicTask.toString());
-                // mMusicTask.run();
-            }
+            // Run demo test!
+            mDemoTask.run();
         }
     }
 }

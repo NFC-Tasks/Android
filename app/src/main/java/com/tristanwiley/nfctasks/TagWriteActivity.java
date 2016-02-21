@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 
 import java.io.IOException;
 
@@ -24,6 +25,8 @@ public class TagWriteActivity extends AppCompatActivity {
     private NfcAdapter mNfcAdapter;
     private PendingIntent mNfcPendingIntent;
     private boolean mWriteMode;
+    private NFDataSource mDataSource;
+    private EditText mTagNameEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +35,12 @@ public class TagWriteActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mTagNameEditText = (EditText) findViewById(R.id.tag_name);
+
         setupNfc();
+
+        mDataSource = new NFDataSource(this);
+        mDataSource.open();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -53,12 +61,14 @@ public class TagWriteActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         enableTagWriteMode();
+        mDataSource.open();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mNfcAdapter.disableForegroundDispatch(this);
+        mDataSource.close();
     }
 
     private void enableTagWriteMode() {
@@ -77,7 +87,11 @@ public class TagWriteActivity extends AppCompatActivity {
 
             if (writeTag(message, detectedTag)) {
                 // SUCCESS!
-                Log.v(TAG, "Successfully wrote tag.");
+                Log.v(TAG, "Successfully wrote tag!");
+                // Insert one with that message
+                mDataSource.open();
+                mDataSource.insertTag(new com.tristanwiley.nfctasks.Tag(getTagString()));
+                finish();
             }
         }
     }
@@ -119,6 +133,6 @@ public class TagWriteActivity extends AppCompatActivity {
     }
 
     private String getTagString() {
-        return "nest";
+        return mTagNameEditText.getText().toString();
     }
 }

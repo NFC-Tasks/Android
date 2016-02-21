@@ -1,11 +1,24 @@
 package com.tristanwiley.nfctasks;
 
+import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
 import android.net.Uri;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
+import android.nfc.tech.Ndef;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,28 +41,54 @@ import com.firebase.ui.FirebaseRecyclerAdapter;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.nestlabs.sdk.GlobalUpdate;
+import com.nestlabs.sdk.NestException;
+import com.nestlabs.sdk.NestListener;
+import com.nestlabs.sdk.NestToken;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getSimpleName();
     AlertDialog adActions;
     AlertDialog ad;
     private TextToSpeech myTTS;
-    private TaskAdapter mTaskAdapter;
+    private TagAdapter mTagAdapter;
     private FirebaseRecyclerAdapter<Tag, TagHolder> mFirebaseAdapter;
     private Firebase mRef;
     private Query mTagRef;
+    private NFDataSource mDataSource;
+    private ListView mListView;
+    private static final int AUTH_TOKEN_REQUEST_CODE = 123;
+    private NfcAdapter mNfcAdapter;
+    private String mTagName;
+    public static final String ARG_TAG = "argTag";
+    private List<NestTask> mNestTasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mDataSource = new NFDataSource(this);
+        mDataSource.open();
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mRef = new Firebase("https://nfc-tasks.firebaseio.com/tags");
+        mTagName = "";
+        if(getIntent() != null) {
+            mTagName = getIntent().getStringExtra(ARG_TAG);
+        }
+
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter == null) {
+            finish();
+        }
+
+        handleIntent(getIntent());
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -61,44 +100,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        setupRecyclerView();
+        setupListView();
+
+        // Get nest tasks for this tag
+        mNestTasks = mDataSource.getNestTasks(this);
     }
 
-    private void setupRecyclerView() {
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.tag_recycler_view);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
+    private void setupListView() {
+        mListView = (ListView) findViewById(R.id.tag_list_view);
+        mTagAdapter = new TagAdapter(this, mDataSource.getTags());
+        mListView.setAdapter(mTagAdapter);
 
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
-
-        // mTaskAdapter = new TaskAdapter(this, getTasks());
-        // recyclerView.setAdapter(mTaskAdapter);
-
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagHolder>(Tag.class, R.layout.list_item_tag, TagHolder.class, mRef) {
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            protected void populateViewHolder(TagHolder tagHolder, Tag tag, int i) {
-                tagHolder.bindTag(tag);
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                showAddNestTaskDialog(((Tag)mTagAdapter.getItem(position)).getName());
+                return true;
             }
-        };
-
-        recyclerView.setAdapter(mFirebaseAdapter);
-    }
-
-    private List<Task> getTasks() {
-        List<Task> tasks = new ArrayList<>();
-
-        tasks.add(new NestTask(this, 65, true));
-        tasks.add(new MusicTask(this, "Ass Back Home"));
-        tasks.add(new WeatherTask(this, "Ann Arbor", "Michigan"));
-
-        return tasks;
-    }
-
-    private void runTests() {
-        for(Task task : mTaskAdapter.getTasks()) {
-            task.run();
-        }
+        });
     }
 
     @Override
@@ -134,6 +153,9 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if(id == R.id.action_tag_write) {
             startTagWriteActivity();
+            return true;
+        } else if(id == R.id.action_tag_read) {
+            startTagReadActivity();
             return true;
         }
 
@@ -246,6 +268,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+
+        for(NestTask t : mNestTasks) {
+            t.reauthenticateFromIntent(data);
+        }
     }
 
     private void startTagWriteActivity() {
@@ -261,5 +287,132 @@ public class MainActivity extends AppCompatActivity {
     private void startTargetActivity() {
         Intent target = new Intent(this, TargetActivity.class);
         startActivity(target);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mDataSource.open();
+
+        mTagAdapter = new TagAdapter(this, mDataSource.getTags());
+        mListView.setAdapter(mTagAdapter);
+
+        setupForegroundDispatch();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mDataSource.close();
+
+        mNfcAdapter.disableForegroundDispatch(this);
+    }
+
+    private void showAddNestTaskDialog(String tagName) {
+        AddNestTaskDialog dialog = AddNestTaskDialog.NewInstance(tagName);
+        dialog.show(getSupportFragmentManager(), "dialog");
+    }
+
+    private void setupForegroundDispatch() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        IntentFilter[] filters = new IntentFilter[1];
+        String[][] techList = new String[][]{};
+        filters[0] = new IntentFilter();
+        filters[0].addAction(NfcAdapter.ACTION_NDEF_DISCOVERED);
+        filters[0].addCategory(Intent.CATEGORY_DEFAULT);
+        try {
+            filters[0].addDataType(Constants.MIME_TYPE);
+        } catch (IntentFilter.MalformedMimeTypeException e) {
+            Log.v(TAG, "Check your mime type.");
+        }
+
+        mNfcAdapter.enableForegroundDispatch(this, pendingIntent, filters, null);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
+            if (Constants.MIME_TYPE.equals(intent.getType())) {
+                android.nfc.Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                // Tag found, update textview
+                //TODO:
+                new NdefReaderTask().execute(tag);
+            } else {
+                Log.v(TAG, "Wrong mime type.");
+            }
+        } else if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
+            android.nfc.Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            String[] techList = tag.getTechList();
+            String searchedTech = Ndef.class.getName();
+
+            for (String tech : techList) {
+                if (searchedTech.equals(tech)) {
+                    new NdefReaderTask().execute(tag);
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        handleIntent(intent);
+    }
+
+    private class NdefReaderTask extends AsyncTask<android.nfc.Tag, Void, String> {
+        @Override
+        protected String doInBackground(android.nfc.Tag... params) {
+            android.nfc.Tag tag = params[0];
+
+            Ndef ndef = Ndef.get(tag);
+            if (ndef == null) {
+                Log.v(TAG, "NDEF not supported.");
+                return null;
+            }
+
+            NdefMessage ndefMessage = ndef.getCachedNdefMessage();
+
+            NdefRecord[] records = ndefMessage.getRecords();
+            for (NdefRecord ndefRecord : records) {
+                if (ndefRecord.getTnf() == NdefRecord.TNF_MIME_MEDIA) {
+                    try {
+                        return readText(ndefRecord);
+                    } catch (UnsupportedEncodingException uee) {
+                        Log.v(TAG, uee.getMessage());
+                    }
+                }
+            }
+
+            Log.v(TAG, "Missed if.");
+            return null;
+        }
+
+        private String readText(NdefRecord ndefRecord) throws UnsupportedEncodingException {
+            byte[] payload = ndefRecord.getPayload();
+
+            String utf8 = "UTF-8";
+            String utf16 = "UTF-16";
+            String textEncoding = ((payload[0] & 128) == 0) ? utf8 : utf16;
+
+            // int languageCodingLength = payload[0] & 0063;
+
+            Log.v(TAG, textEncoding);
+            return new String(payload, 0, payload.length, textEncoding);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.v(TAG, "onPostExecute");
+
+            Log.v(TAG, "Read data: " + s);
+
+            Log.v(TAG, "Have: " + mNestTasks.size());
+            for(NestTask t : mNestTasks) {
+                t.run();
+            }
+        }
     }
 }

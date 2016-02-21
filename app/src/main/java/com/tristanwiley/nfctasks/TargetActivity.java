@@ -232,19 +232,8 @@ public class TargetActivity extends AppCompatActivity {
 
             Log.v(TAG, "Read data: " + s);
 
-            // If we read "nest", call thing
-            if (s.equals("nest")) {
-                isTargetAvailable("003-08-0338");
-                // Set temperature
-                // mNestTask.run();
-
-                // Say weather first
-                // sayWeather("Ann Arbor", "Michigan");
-
-                //NGGYU
-                // Log.v(TAG, mMusicTask.toString());
-                // mMusicTask.run();
-            }
+            // Demo target
+            isTargetAvailable("003-08-0338");
         }
     }
 

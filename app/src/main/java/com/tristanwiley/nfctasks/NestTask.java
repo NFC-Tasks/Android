@@ -2,9 +2,13 @@ package com.tristanwiley.nfctasks;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 import com.nestlabs.sdk.GlobalUpdate;
 import com.nestlabs.sdk.NestAPI;
 import com.nestlabs.sdk.NestException;
@@ -24,6 +28,7 @@ public class NestTask implements Task {
     private Activity mActivity;
     private boolean mFahrenheit;
     private long mTargetValue;
+    private TextToSpeech mTTS;
 
     public NestTask(Activity activity, long targetValue, boolean fahrenheit) {
         this.mActivity = activity;
@@ -35,6 +40,12 @@ public class NestTask implements Task {
 
     @Override
     public void run() {
+
+        // If thermostat is null just return
+        if(mThermostat == null) {
+            return;
+        }
+
         // set value
         String thermostatId = mThermostat.getDeviceId();
 
@@ -44,6 +55,20 @@ public class NestTask implements Task {
         } else {
             mNest.thermostats.setTargetTemperatureC(thermostatId, mTargetValue);
         }
+
+        say();
+    }
+
+    private void say() {
+        mTTS = new TextToSpeech(mActivity.getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(mTTS != null) {
+                    String speech = "I will set your thermostat to " + mTargetValue + ".";
+                    mTTS.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
+                }
+            }
+        });
     }
 
     public void reauthenticateFromIntent(Intent intent) {
@@ -66,6 +91,8 @@ public class NestTask implements Task {
             mNest.setConfig(Constants.NEST_CLIENT_ID, Constants.NEST_CLIENT_SECRET, Constants.REDIRECT_URL);
             mNest.launchAuthFlow(mActivity, AUTH_TOKEN_REQUEST_CODE);
         }
+
+        fetchThermostat();
     }
 
     /**

@@ -11,4 +11,5 @@
     <string name="title_activity_tag">TagActivity</string>
     <string name="title_activity_target">Target Availability</string>
     <string name="action_target">Target Availability</string>
+    <string name="action_demo">Demo Test</string>
 </resources>
