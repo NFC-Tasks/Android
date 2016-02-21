@@ -1,5 +1,7 @@
 package com.tristanwiley.nfctasks;
 
+import com.nestlabs.sdk.NestAPI;
+
 /**
  * Constant values for connecting with NEST.
  * <p/>

@@ -57,7 +57,6 @@ public class NestTask implements Task {
     }
 
     private void setupNest() {
-        NestAPI.setAndroidContext(mActivity);
         mNest = NestAPI.getInstance();
         mToken = Settings.loadAuthToken(mActivity);
 

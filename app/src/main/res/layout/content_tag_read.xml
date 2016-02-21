@@ -9,7 +9,13 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.adammcneilly.mhacksrefactor.TagReadActivity"
+    tools:context="com.tristanwiley.nfctasks.TagReadActivity"
     tools:showIn="@layout/activity_tag_read">
+
+    <TextView
+        android:id="@+id/tag_instructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"/>
 
 </RelativeLayout>

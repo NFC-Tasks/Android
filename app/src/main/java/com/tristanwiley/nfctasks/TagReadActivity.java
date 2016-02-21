@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
@@ -45,6 +46,9 @@ public class TagReadActivity extends AppCompatActivity {
     private NestTask mNestTask;
     private MusicTask mMusicTask;
     private NestWeatherTask mNestWeatherTask;
+    private String mTagName;
+
+    public static final String ARG_TAG = "argTag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,14 @@ public class TagReadActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tag_read);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mTagName = "";
+        if(getIntent() != null) {
+            mTagName = getIntent().getStringExtra(ARG_TAG);
+        }
+
+        TextView textView = (TextView) findViewById(R.id.tag_instructions);
+        textView.setText("Place phone on the " + mTagName + " tag...");
 
         // Create nest task
         mNestTask = new NestTask(this, 65, true);
