@@ -43,6 +43,8 @@ public class TagReadActivity extends AppCompatActivity {
     private NestToken mToken;
     private Thermostat mThermostat;
     private TextToSpeech mTTS;
+    private NestTask mNestTask;
+    private MusicTask mMusicTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +53,10 @@ public class TagReadActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        setupNest();
+        // Create nest task
+        mNestTask = new NestTask(this, 65, true);
+        mMusicTask = new MusicTask(this, "Never Gonna Give You Up");
+
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if(mNfcAdapter == null) {
@@ -90,13 +95,7 @@ public class TagReadActivity extends AppCompatActivity {
             return;
         }
 
-        mToken = NestAPI.getAccessTokenFromIntent(intent);
-        if (mToken != null) {
-            Settings.saveAuthToken(this, mToken);
-            authenticate(mToken);
-        } else {
-            Log.e(TAG, "Unable to resolve access token from payload.");
-        }
+        mNestTask.reauthenticateFromIntent(intent);
     }
 
     private void setupForegroundDispatch() {
@@ -299,26 +298,16 @@ public class TagReadActivity extends AppCompatActivity {
             Log.v(TAG, "Read data: " + s);
 
             // If we read "nest", call thing
-            if(s.equals("nest") && mThermostat != null) {
+            if(s.equals("nest")) {
                 // Set temperature
-                String thermostatID = mThermostat.getDeviceId();
-                mNest.thermostats.setTargetTemperatureF(thermostatID, 65, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.v(TAG, "Successfully set temperature.");
-                    }
-
-                    @Override
-                    public void onFailure(NestException exception) {
-                        Log.v(TAG, "Unable to set temperature: " + exception.getMessage());
-                    }
-                });
+                mNestTask.run();
 
                 // Say weather first
                 sayWeather("Ann Arbor", "Michigan");
 
-                // Play kanye
-                playMusic("All I Do Is Win", "DJ Khaled");
+                //NGGYU
+                Log.v(TAG, mMusicTask.toString());
+                mMusicTask.run();
             }
         }
     }
