@@ -40,6 +40,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         return mTasks.size();
     }
 
+    public List<Task> getTasks() {
+        return mTasks;
+    }
+
     public void remove(int position) {
         mTasks.remove(position);
         notifyItemRemoved(position);

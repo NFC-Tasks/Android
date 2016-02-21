@@ -77,14 +77,16 @@ public class MainActivity extends AppCompatActivity {
         List<Task> tasks = new ArrayList<>();
 
         tasks.add(new NestTask(this, 65, true));
-        tasks.add(new MusicTask(this, "Never Gonna Give You Up"));
+        tasks.add(new MusicTask(this, "Ass Back Home"));
         tasks.add(new WeatherTask(this, "Ann Arbor", "Michigan"));
 
         return tasks;
     }
 
     private void runTests() {
-
+        for(Task task : mTaskAdapter.getTasks()) {
+            task.run();
+        }
     }
 
     @Override
@@ -109,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.action_tag_read) {
             startTagReadActivity();
+            return true;
+        } else if(id == R.id.action_run) {
+            runTests();
             return true;
         }
 
